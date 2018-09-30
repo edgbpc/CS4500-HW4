@@ -70,9 +70,10 @@ Development:
 
 # for the random number generator
 import random
+import turtle
 
 # program creates this file if not already created
-outputFile = open("HW3goodwinOutfile.txt", "w")
+outputFile = open("HW4goodwinOutfile.txt", "w")
 
 introMessage = """Dice Rolling Simulation - 
 User to make three selections at the start of the simulation.
@@ -112,6 +113,8 @@ while verboseModeAnswerNotValid:
 
 
 # follow section purpose is to obtain number of levels from the user.
+# commenting out selection of levels and times ran.  for HW4 controlled by input file
+'''
 numberOfLevelsIsNotValid = True  # controls while loop.  must become false to break the loop
 numLevels = 2  # declare number of levels.  minimum is 2 levels
 
@@ -153,16 +156,354 @@ while numberOfTimesSimRanIsNotValid:
         numberOfTimesSimRanIsNotValid = True
 
 # print("You entered " + numTimesRan + " to run the sim")
+'''
+
+# Part 1 - graphical representation
+numTimesRan = 1
+numLevels = 6
+
+# calculate number of nodes
+numNodes = int((int(numLevels) * (int(numLevels) + 1)) / 2)
+# create gameDotTrackerV2. uses the number of nodes to create the list.  add 1 because lists are index starting at 0
+gameDotTrackerV2 = [0] * (numNodes + 1)
+numVisits = 0
+
+def colorSelector(numVisits):
+    # using -1 as a sentry to indicate current node
+    # otherwise numVisits = number of times a node has been visited to determine color
+    if numVisits == -1:
+        return '#FFFF00'
+    if numVisits == 0:
+        return '#FFFFFF'
+    if numVisits <= 5:
+        return '#FF0000'
+    if 6 <= numVisits <= 10:
+        return '#800000'
+    if numVisits > 10:
+        return '#5D0000'
+
+
+def colorNode(currentLocation):
+    # row 1
+    if currentLocation == 1:
+        # change color of triangle 1
+        rowOneTriangles.penup()
+        rowOneTriangles.home()
+        rowOneTriangles.goto(-175, 215)
+        rowOneTriangles.left(60)
+        # rowOneTriangles.forward(250)
+        rowOneTriangles.fillcolor(colorSelector(numVisits))
+        rowOneTriangles.begin_fill()
+        rowOneTriangles.pendown()
+        rowOneTriangles.right(60)
+        rowOneTriangles.forward(50)
+        rowOneTriangles.left(120)
+        rowOneTriangles.forward(50)
+        rowOneTriangles.left(120)
+        rowOneTriangles.forward(50)
+        rowOneTriangles.end_fill()
+    # row 2
+
+    if 2 <= currentLocation <= 3:
+        rowTwoTriangles.penup()
+        rowTwoTriangles.home()
+        rowTwoTriangles.goto(-200, 173)
+        rowTwoTriangles.left(60)
+        # rowOneTriangles.forward(250)
+        rowTwoTriangles.fillcolor(colorSelector(numVisits))
+        rowTwoTriangles.begin_fill()
+        rowTwoTriangles.pendown()
+        rowTwoTriangles.right(60)
+
+        if currentLocation == 2:
+            rowTwoTriangles.forward(50)
+
+        if currentLocation == 3:
+            rowTwoTriangles.forward(100)
+
+        rowTwoTriangles.left(120)
+        rowTwoTriangles.forward(50)
+        rowTwoTriangles.left(120)
+        rowTwoTriangles.forward(50)
+        rowTwoTriangles.end_fill()
+        rowTwoTriangles.penup()
+
+    # row 3
+    if 4 <= currentLocation <= 6:
+        rowThreeTriangles.penup()
+        rowThreeTriangles.home()
+        rowThreeTriangles.goto(-225, 130)
+        rowThreeTriangles.left(60)
+        # rowOneTriangles.forward(250)
+        rowThreeTriangles.fillcolor(colorSelector(numVisits))
+        rowThreeTriangles.begin_fill()
+        rowThreeTriangles.pendown()
+        rowThreeTriangles.right(60)
+
+        if currentLocation == 4:
+            rowThreeTriangles.forward(50)
+
+        if currentLocation == 5:
+            rowThreeTriangles.forward(100)
+
+        if currentLocation == 6:
+            rowThreeTriangles.forward(150)
+
+        rowThreeTriangles.left(120)
+        rowThreeTriangles.forward(50)
+        rowThreeTriangles.left(120)
+        rowThreeTriangles.forward(50)
+        rowThreeTriangles.end_fill()
+
+    # row 4
+    if 7 <= currentLocation <= 10:
+        rowFourTriangles.penup()
+        rowFourTriangles.home()
+        rowFourTriangles.goto(-250, 88)
+        rowFourTriangles.left(60)
+        # rowOneTriangles.forward(250)
+        rowFourTriangles.fillcolor(colorSelector(numVisits))
+        rowFourTriangles.begin_fill()
+        rowFourTriangles.pendown()
+        rowFourTriangles.right(60)
+
+        if currentLocation == 7:
+            rowFourTriangles.forward(50)
+        if currentLocation == 8:
+            rowFourTriangles.forward(100)
+        if currentLocation == 9:
+            rowFourTriangles.forward(150)
+        if currentLocation == 10:
+            rowFourTriangles.forward(200)
+
+        rowFourTriangles.left(120)
+        rowFourTriangles.forward(50)
+        rowFourTriangles.left(120)
+        rowFourTriangles.forward(50)
+        rowFourTriangles.end_fill()
+
+    # row 5
+    if 11 <= currentLocation <= 15:
+        rowFiveTriangles.penup()
+        rowFiveTriangles.home()
+        rowFiveTriangles.goto(-275, 44)
+        rowFiveTriangles.left(60)
+        # rowOneTriangles.forward(250)
+        rowFiveTriangles.fillcolor(colorSelector(numVisits))
+        rowFiveTriangles.begin_fill()
+        rowFiveTriangles.pendown()
+        rowFiveTriangles.right(60)
+
+        if currentLocation == 11:
+            rowFiveTriangles.forward(50)
+        if currentLocation == 12:
+            rowFiveTriangles.forward(100)
+        if currentLocation == 13:
+            rowFiveTriangles.forward(150)
+        if currentLocation == 14:
+            rowFiveTriangles.forward(200)
+        if currentLocation == 15:
+            rowFiveTriangles.forward(250)
+
+        rowFiveTriangles.left(120)
+        rowFiveTriangles.forward(50)
+        rowFiveTriangles.left(120)
+        rowFiveTriangles.forward(50)
+        rowFiveTriangles.end_fill()
+
+    # row 6
+    if 16 <= currentLocation <= 21:
+        rowSixTriangles.penup()
+        rowSixTriangles.home()
+        rowSixTriangles.goto(-300, 0)
+        rowSixTriangles.left(60)
+        # rowOneTriangles.forward(250)
+        rowSixTriangles.fillcolor(colorSelector(numVisits))
+        rowSixTriangles.begin_fill()
+        rowSixTriangles.pendown()
+        rowSixTriangles.right(60)
+
+        if currentLocation == 16:
+            rowSixTriangles.forward(50)
+        if currentLocation == 17:
+            rowSixTriangles.forward(100)
+        if currentLocation == 18:
+            rowSixTriangles.forward(150)
+        if currentLocation == 19:
+            rowSixTriangles.forward(200)
+        if currentLocation == 20:
+            rowSixTriangles.forward(250)
+        if currentLocation == 21:
+            rowSixTriangles.forward(300)
+
+        rowSixTriangles.left(120)
+        rowSixTriangles.forward(50)
+        rowSixTriangles.left(120)
+        rowSixTriangles.forward(50)
+        rowSixTriangles.end_fill()
+
+
+# draw the background of the gameboard
+background = turtle.Turtle()
+background.speed(0)
+background.fillcolor('black')
+background.begin_fill()
+background.penup
+background.goto(-300, 0)
+
+
+background.pendown
+background.forward(300)
+background.left(120)
+background.forward(300)
+background.left(120)
+background.forward(300)
+background.end_fill()
+
+
+# draw each row of the game boar, starts in row 6 and moves progress to row 1
+rowSixTriangles = turtle.Turtle()
+rowSixTriangles.speed(0)
+rowSixTriangles.fillcolor(colorSelector(0))
+rowSixTriangles.begin_fill()
+rowSixTriangles.penup
+rowSixTriangles.goto(-300, 0)
+rowSixTriangles.pendown
+for x in range(1, 7):
+    rowSixTriangles.forward(50)
+    rowSixTriangles.left(120)
+    rowSixTriangles.forward(50)
+    rowSixTriangles.left(120)
+    rowSixTriangles.penup()
+    rowSixTriangles.forward(50)
+    rowSixTriangles.left(120)
+    rowSixTriangles.forward(50)
+    rowSixTriangles.pendown()
+rowSixTriangles.end_fill()
+rowSixTriangles.penup()
+
+rowFiveTriangles = turtle.Turtle()
+rowFiveTriangles.speed(0)
+rowFiveTriangles.fillcolor(colorSelector(0))
+rowFiveTriangles.penup()
+rowFiveTriangles.goto(-300, 0)
+rowFiveTriangles.left(60)
+rowFiveTriangles.forward(50)
+rowFiveTriangles.right(60)
+rowFiveTriangles.pendown()
+rowFiveTriangles.begin_fill()
+for x in range(1, 6):
+    rowFiveTriangles.forward(50)
+    rowFiveTriangles.left(120)
+    rowFiveTriangles.forward(50)
+    rowFiveTriangles.left(120)
+    rowFiveTriangles.penup()
+    rowFiveTriangles.forward(50)
+    rowFiveTriangles.left(120)
+    rowFiveTriangles.forward(50)
+    rowFiveTriangles.pendown()
+rowFiveTriangles.end_fill()
+rowFiveTriangles.penup()
+
+rowFourTriangles = turtle.Turtle()
+rowFourTriangles.speed(0)
+rowFourTriangles.fillcolor(colorSelector(0))
+rowFourTriangles.penup()
+rowFourTriangles.goto(-300, 0)
+rowFourTriangles.left(60)
+rowFourTriangles.forward(100)
+rowFourTriangles.right(60)
+rowFourTriangles.pendown()
+rowFourTriangles.begin_fill()
+for x in range(1, 5):
+    rowFourTriangles.forward(50)
+    rowFourTriangles.left(120)
+    rowFourTriangles.forward(50)
+    rowFourTriangles.left(120)
+    rowFourTriangles.penup()
+    rowFourTriangles.forward(50)
+    rowFourTriangles.left(120)
+    rowFourTriangles.forward(50)
+    rowFourTriangles.pendown()
+rowFourTriangles.end_fill()
+rowFourTriangles.penup()
+
+rowThreeTriangles = turtle.Turtle()
+rowThreeTriangles.speed(0)
+rowThreeTriangles.fillcolor(colorSelector(0))
+rowThreeTriangles.penup()
+rowThreeTriangles.goto(-300, 0)
+rowThreeTriangles.left(60)
+rowThreeTriangles.forward(150)
+rowThreeTriangles.right(60)
+rowThreeTriangles.pendown()
+rowThreeTriangles.begin_fill()
+for x in range(1, 4):
+    rowThreeTriangles.forward(50)
+    rowThreeTriangles.left(120)
+    rowThreeTriangles.forward(50)
+    rowThreeTriangles.left(120)
+    rowThreeTriangles.penup()
+    rowThreeTriangles.forward(50)
+    rowThreeTriangles.left(120)
+    rowThreeTriangles.forward(50)
+    rowThreeTriangles.pendown()
+rowThreeTriangles.end_fill()
+rowThreeTriangles.penup()
+
+rowTwoTriangles = turtle.Turtle()
+rowTwoTriangles.speed(0)
+rowTwoTriangles.fillcolor(colorSelector(0))
+rowTwoTriangles.penup()
+rowTwoTriangles.goto(-300, 0)
+rowTwoTriangles.left(60)
+rowTwoTriangles.forward(200)
+rowTwoTriangles.right(60)
+rowTwoTriangles.pendown()
+rowTwoTriangles.begin_fill()
+for x in range(1, 3):
+    rowTwoTriangles.forward(50)
+    rowTwoTriangles.left(120)
+    rowTwoTriangles.forward(50)
+    rowTwoTriangles.left(120)
+    rowTwoTriangles.penup()
+    rowTwoTriangles.forward(50)
+    rowTwoTriangles.left(120)
+    rowTwoTriangles.forward(50)
+    rowTwoTriangles.pendown()
+rowTwoTriangles.end_fill()
+rowTwoTriangles.penup()
+
+rowOneTriangles = turtle.Turtle()
+rowOneTriangles.speed(0)
+rowOneTriangles.fillcolor(colorSelector(0))
+rowOneTriangles.penup()
+rowOneTriangles.goto(-300, 0)
+rowOneTriangles.left(60)
+rowOneTriangles.forward(250)
+rowOneTriangles.right(60)
+rowOneTriangles.pendown()
+rowOneTriangles.begin_fill()
+for x in range(1, 2):
+    rowOneTriangles.forward(50)
+    rowOneTriangles.left(120)
+    rowOneTriangles.forward(50)
+    rowOneTriangles.left(120)
+    rowOneTriangles.penup()
+    rowOneTriangles.forward(50)
+    rowOneTriangles.left(120)
+    rowOneTriangles.forward(50)
+    rowOneTriangles.pendown()
+rowOneTriangles.end_fill()
+rowOneTriangles.penup()
 
 
 # list declarations for recording statistics
 allMoves = [0] * int(numTimesRan)
 maxMoves = [0] * int(numTimesRan)
 
-# calculate number of nodes
-numNodes = int((int(numLevels) * (int(numLevels) + 1)) / 2)
-# create gameDotTrackerV2. uses the number of nodes to create the list.  add 1 because lists are index starting at 0
-gameDotTrackerV2 = [0] * (numNodes + 1)
+
+
 
 # create gameBoard for Version 2 of pyramid. uses the number of nodes to create the list.  add 1 because lists are
 # index starting at 0
@@ -231,10 +572,10 @@ for level in range(1, (int(numLevels) + 1)):
 
         # determine the rightMostNode
         rightMostNode = int((int(numLevels) * (int(numLevels) + 1) / 2))
-        print("right most node is: " + str(rightMostNode))
+        # print("right most node is: " + str(rightMostNode))
         # determine the leftMostNode
         leftMostNode = int(rightMostNode) - (int(numLevels) - 1)
-        print("Left most node is: " + str(leftMostNode))
+        # print("Left most node is: " + str(leftMostNode))
 
         # populate valid moves in the rightMostNode and leftMostNode
         gameBoardLocationV2[rightMostNode] = [0, rightMostNode - int(numLevels), None, None, None]
@@ -325,10 +666,15 @@ for runTimes in range(1, int(numTimesRan) + 1):
     # if the move is not valid, increments the counter for the currentlocation
         if gameBoardLocationV2[currentLocation][diceRoll] is not None:
             currentLocation = gameBoardLocationV2[currentLocation][diceRoll]
+            numVisits = -1
+            colorNode(currentLocation)
             # for progam efficieny, commenting out the dottracking in the location tuple since this isn't used in the final
             # calculations.  left for future use.
             # gameBoardLocation[currentLocation][0] += 1
             gameDotTrackerV2[currentLocation] += 1
+            numVisits = gameDotTrackerV2[currentLocation]
+            colorNode(currentLocation)
+
             if verbose == True:
                 print(",", end='')
                 print(str(currentLocation), end='')
@@ -339,8 +685,13 @@ for runTimes in range(1, int(numTimesRan) + 1):
         else:
             # commented code below allows for more verbose description of what is occurring in game
             # print("Unable to move.  Incrementing count for location " + str(currentLocation))
+            numVisits = -1
+            colorNode(currentLocation)
             currentLocation = currentLocation
             gameDotTrackerV2[currentLocation] += 1
+            numVisits = gameDotTrackerV2[currentLocation]
+            colorNode(currentLocation)
+
             # for progam efficieny, commenting out the dottracking in the location tuple since this isn't used in the final
             # calculations.  left for future use.
             # gameBoardLocation[currentLocation][0] += 1
@@ -414,6 +765,7 @@ outputFile.write("Average number of max moves: " + str(averageMaxMoves) + "\n")
 # close the file being written
 outputFile.close()
 
+turtle.done()
 
 # testing
 # used defined dice rolls to determine if currentlocation changed to expected location
