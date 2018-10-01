@@ -5,6 +5,7 @@ Python 3.7.0
 PyCharm IDE
 CS 4500 Introduction to the Software Profession
 External Files created - H3goodwinOutfile.txt
+External File used - HWinfile.txt.  Must be supplied to run sim
 Program creates this file with output data.  data is same as what
 is displayed on the screen running of the program.
 
@@ -66,16 +67,23 @@ add total sim statistics - DONE
 
 add feature to turn off on screen reporting of nodes visited -DONE
 
-Development:
+New Features for HW4:
+Add graphical representation of pyramid - DONE
+Add read in from file - DONE
+Add repeat of sim to include generation of new board each run - DONE
+Add table report - DONE
+
 
 '''
 
 # for the random number generator
 import random
+# for graphics suite
 import turtle
 
 # program creates this file if not already created
 outputFile = open("HW4goodwinOutfile.txt", "w")
+
 
 introMessage = """Dice Rolling Simulation - 
 User to make three selections at the start of the simulation.
@@ -119,6 +127,7 @@ while verboseModeAnswerNotValid:
 # follow section purpose is to obtain number of levels from the user.
 # commenting out selection of levels and times ran.  for HW4 controlled by input file
 '''
+# this code was part of HW3. disabled for this assignment
 numberOfLevelsIsNotValid = True  # controls while loop.  must become false to break the loop
 numLevels = 2  # declare number of levels.  minimum is 2 levels
 
@@ -163,19 +172,26 @@ while numberOfTimesSimRanIsNotValid:
 '''
 
 
+# get the data from the input file that controls passes 2 through 5 of the game
 readInFile = open("HWinfile.txt", "r")
 parametersFromFile = readInFile.readlines()
+# build the list of data needed to determine levels of the pyramid and number of times that game is ran
+# first data pair is always 6, 1 for graphical representation..
+# next pairs are from the input file
+
 gameData = [6, 1]
 for index in range(len(parametersFromFile)):
     tempData = parametersFromFile[index][1:-2].split(', ')
     gameData.append(int(tempData[0]))
     gameData.append(int(tempData[1]))
 
-print(gameData)
+# print(gameData)
 
+# firstGame is used a flag. controls of the colorNode function is called.  Only calls on first run of the sim
 firstGame = True
 
-
+# colorSelector selects color based on numVisits.  gets darker the move visits to a node
+# -1 is used a sentry to indicate the active node
 def colorSelector(numVisits):
     # using -1 as a sentry to indicate current node
     # otherwise numVisits = number of times a node has been visited to determine color
@@ -191,6 +207,9 @@ def colorSelector(numVisits):
         return '#5D0000'
 
 
+# colorNode redraws the triangle as the game moves to a new node.  Calls colorSelector to determine color
+# when a node in a specific row is selected, turtle moves to beginning of the row and moves forward to the start of
+# triangle that represents that node and redraws the triangle.
 def colorNode(currentLocation):
     # row 1
     if currentLocation == 1:
@@ -351,6 +370,7 @@ def colorNode(currentLocation):
         rowSixTriangles.end_fill()
 
 
+
 # draw the background of the gameboard
 background = turtle.Turtle()
 background.speed(0)
@@ -358,8 +378,6 @@ background.fillcolor('black')
 background.begin_fill()
 background.penup
 background.goto(-300, 0)
-
-
 background.pendown
 background.forward(300)
 background.left(120)
@@ -369,7 +387,7 @@ background.forward(300)
 background.end_fill()
 
 
-# draw each row of the game boar, starts in row 6 and moves progress to row 1
+# draw each row of the game board, starts in row 6 and moves progress to row 1
 rowSixTriangles = turtle.Turtle()
 rowSixTriangles.speed(0)
 rowSixTriangles.fillcolor(colorSelector(0))
@@ -505,26 +523,29 @@ for x in range(1, 2):
 rowOneTriangles.end_fill()
 rowOneTriangles.penup()
 
+# this series of lists is used to report data following the run of the passes controlled by the input file
 simLevels = [0, 0, 0, 0]
 simTimesRun = [0, 0, 0, 0]
 simMaxMoves = [0, 0, 0, 0]
 simMaxDots = [0, 0, 0, 0]
 
+# sim repeats 5 times.  1st pass runs the graphical representation
+# passed 2 through 5 controlled by the input file
 for simRepeat in range(1, 6):
-    # calculate number of nodes
+
     numLevels = gameData[0]
     numTimesRan = gameData[1]
 
+    # only retains the data from runs 2 through 5
     if firstGame == False:
         simLevels[simRepeat - 2] = gameData[0]
         simTimesRun[simRepeat - 2] = gameData[1]
 
+    # remove the data from the first two locations in gameData. allows 2nd pair to be used for next run of the for loop
     gameData.pop(1)
     gameData.pop(0)
 
-    # print(simLevels)
-    # print(simTimesRun)
-
+    # determine number of nodes in the pyramid
     numNodes = int((int(numLevels) * (int(numLevels) + 1)) / 2)
     # create gameDotTrackerV2. uses the number of nodes to create the list.  add 1 because lists are index starting at 0
     gameDotTrackerV2 = [0] * (numNodes + 1)
@@ -534,6 +555,8 @@ for simRepeat in range(1, 6):
     allMoves = [0] * int(numTimesRan)
     maxMoves = [0] * int(numTimesRan)
 
+    # same game board creation as HW3.
+    # only change was to bring into the for loop so that a new board is created each for loop
 
     # create gameBoard for Version 2 of pyramid. uses the number of nodes to create the list.  add 1 because lists are
     # index starting at 0
@@ -655,7 +678,8 @@ for simRepeat in range(1, 6):
     '''
 
 
-    # sim will repeat based on user input
+    # sim will repeat based on repeat factor supplied in the input file
+    # only addition from HW 3 was to add the controls for colorNode if during the first game
     for runTimes in range(1, int(numTimesRan) + 1):
         # stillPlaying controls if the game is continuing to play.  Once all locations have been visited once, stillPlaying
         # will change to false and terminate the game
@@ -762,6 +786,8 @@ for simRepeat in range(1, 6):
         maxDots = max(gameDotTrackerV2)
         maxMoves[runTimes - 1] = maxDots
 
+        # this turtle draws the report for the graphical representation of the first pass of the sim.
+        # only draws first pass
         if firstGame == True:
             textTurtle.goto(-300, -50)
             textTurtle.write("Total moves to complete the game: " + str(totalMoves - 1))
@@ -780,12 +806,14 @@ for simRepeat in range(1, 6):
         '''
 
 
+    # retains only the data from passes 2 through 5
     if firstGame == False:
         simMaxMoves[simRepeat - 2] = sum(allMoves)
         simMaxDots[simRepeat - 2] = max(maxMoves)
         # print(simMaxMoves)
         # print(simMaxDots)
 
+    # change the firstGame flag to false.  This turns off the features associated with graphical representation
     firstGame = False
 
 '''
@@ -818,6 +846,7 @@ print("Average number of max moves: " + str(averageMaxMoves))
 outputFile.write("Average number of max moves: " + str(averageMaxMoves) + "\n")
 '''
 
+# prints the chart for sim data from passes 2 through 5
 print("Data for Sims from Input File\n")
 print("|\t\t\t|Run 1\t\t|Run 2\t\t|Run 3\t\t|Run 4\t\t|")
 print("|Levels\t\t|" + "\t" + str(simLevels[0]) + "\t\t|\t" + str(simLevels[1]) + "\t\t|\t" + str(simLevels[2]) + "\t\t|\t" + str(simLevels[3]) + "\t\t|")
@@ -830,6 +859,7 @@ outputFile.close()
 turtle.done()
 
 # testing
+# colorNode subtainally slows down sim running.  comment out in order to speed up testing.  final runs turned back on
 # used defined dice rolls to determine if currentlocation changed to expected location
 # displayed gameDotTracker to be able to confirm dot summing and max dots to verify index
 # git used for version control.
@@ -837,3 +867,5 @@ turtle.done()
 # tested to validate user input is an int
 # validated the generation of levels against original encoding.
 # tested verbose on and off.  results as expected
+# hard time testing final numbers for passes 2 through 5.  seems to make sense based on previous versions
+
