@@ -20,6 +20,8 @@ https://stackoverflow.com/questions/493386/how-to-print-without-newline-or-space
 https://stackoverflow.com/questions/10660435/pythonic-way-to-create-a-long-multi-line-string
 https://www.programiz.com/python-programming/methods/list/clear
 https://www.tutorialspoint.com/python/list_min.htm
+https://coolpythoncodes.com/python-turtle/
+https://cs.nyu.edu/courses/spring13/CSCI-UA.0002-007/CSCI_UA-02_Day21.pdf
 
 
 
@@ -94,8 +96,10 @@ outputFile.write(introMessage + "\n\n")
 # visited location.  input is made not cast sensitive by using .lower method
 # once valid entry is received, break from the while loop and proceed
 # verbose mode off prevents display visited nodes from both screen and output file.  clarified in class
+# option to turn off and on verbose disabled for this version of the assignment.  verbose always on
 verboseModeAnswerNotValid = True
 verbose = False
+'''
 while verboseModeAnswerNotValid:
     verboseMode = input("Display all visited nodes (yes/no)?")
     verboseMode = verboseMode.lower()
@@ -110,7 +114,7 @@ while verboseModeAnswerNotValid:
         break
     if verboseMode is not {'yes', 'no'}: # if user input is not part of this set, loop while loop repeats until selected
         verboseModeAnswerNotValid = True
-
+'''
 
 # follow section purpose is to obtain number of levels from the user.
 # commenting out selection of levels and times ran.  for HW4 controlled by input file
@@ -158,15 +162,19 @@ while numberOfTimesSimRanIsNotValid:
 # print("You entered " + numTimesRan + " to run the sim")
 '''
 
-# Part 1 - graphical representation
-numTimesRan = 1
-numLevels = 6
 
-# calculate number of nodes
-numNodes = int((int(numLevels) * (int(numLevels) + 1)) / 2)
-# create gameDotTrackerV2. uses the number of nodes to create the list.  add 1 because lists are index starting at 0
-gameDotTrackerV2 = [0] * (numNodes + 1)
-numVisits = 0
+readInFile = open("HWinfile.txt", "r")
+parametersFromFile = readInFile.readlines()
+gameData = [6, 1]
+for index in range(len(parametersFromFile)):
+    tempData = parametersFromFile[index][1:-2].split(', ')
+    gameData.append(int(tempData[0]))
+    gameData.append(int(tempData[1]))
+
+print(gameData)
+
+firstGame = True
+
 
 def colorSelector(numVisits):
     # using -1 as a sentry to indicate current node
@@ -497,242 +505,290 @@ for x in range(1, 2):
 rowOneTriangles.end_fill()
 rowOneTriangles.penup()
 
+simLevels = [0, 0, 0, 0]
+simTimesRun = [0, 0, 0, 0]
+simMaxMoves = [0, 0, 0, 0]
+simMaxDots = [0, 0, 0, 0]
 
-# list declarations for recording statistics
-allMoves = [0] * int(numTimesRan)
-maxMoves = [0] * int(numTimesRan)
+for simRepeat in range(1, 6):
+    # calculate number of nodes
+    numLevels = gameData[0]
+    numTimesRan = gameData[1]
 
+    if firstGame == False:
+        simLevels[simRepeat - 2] = gameData[0]
+        simTimesRun[simRepeat - 2] = gameData[1]
 
+    gameData.pop(1)
+    gameData.pop(0)
 
+    # print(simLevels)
+    # print(simTimesRun)
 
-# create gameBoard for Version 2 of pyramid. uses the number of nodes to create the list.  add 1 because lists are
-# index starting at 0
-gameBoardLocationV2 = [0, 0, 0, 0, 0] * (numNodes + 1)
-
-# game boards for both version 1 and version follow the same encoding rules
-#
-# gameBoardLocation contains the game data for each position on the board.
-# Encoding is as follows:
-# index 0 - dot counter
-# ended up not using the index 0 and opted for a separate list for the tracking of dots.  left in code for future use
-# index 1 - Valid Upper Left Movement
-# index 2 - Valid Lower Left Movement
-# index 3 - Valid Upper Right Movement
-# index 4 - Valid Lower Right Movement
-# index of gameBoardLocation corresponds to a location on the pyramid.
-# Example: gameBoardLocation[1] refers to position 1
-
-# generate gameBoardLocationV2 size
-
-# populate nodes
-
-# gameBoardLocationV2[0] not used for this project.  initializing as in version 1
-gameBoardLocationV2[0] = [0, None, None, None, None]
-# level 1 and  level 2 are required. setting these as special cases.  they will not generate automatically
-# same values as in version 1
-
-for level in range(1, (int(numLevels) + 1)):
-    # levels 1 and 2 are special cases and declared implicitly
-    if level == 1:
-        gameBoardLocationV2[1] = [0, None, 2, None, 3]  # dot count starts at 0, valid moves are lower left, lower right
-
-    if level == 2:
-        gameBoardLocationV2[2] = [0, None, 4, 1, 5]
-        gameBoardLocationV2[3] = [0, 1, 5, None, 6]
-
-
-    # generates the nodes for all the rows in the game board that are not row 1, 2 or the terminating row
-    if level >= 3 and level < int(numLevels):
-
-        # determine the rightMostNode
-        rightMostNode = int((int(level) * (int(level) + 1) / 2))
-        # determine the leftMostNode
-        leftMostNode = int(rightMostNode) - (int(level) - 1)
-
-        # populate right most node's valid locations into the list
-        gameBoardLocationV2[rightMostNode] = [0, rightMostNode - int(level), rightMostNode + int(level), None,
-                                              rightMostNode + int(level) + 1]
-
-        # populate left most node's valid location into the list
-        gameBoardLocationV2[leftMostNode] = [0, None, leftMostNode + int(level), leftMostNode - int(level) + 1,
-                                             leftMostNode + int(level) + 1]
-
-
-        # purpose of the following for loop is to generate the internal nodes and the valid moves for each of the
-        # internal nodes.  start at the left most node and continue to the right most node
-        # skips the calculation for left and right most nodes as they are defined as special cases
-        # results validated against the version 1 of the hard encoded list from HW 1
-        y = leftMostNode
-        for internalNode in range(leftMostNode, rightMostNode + 1):
-            if internalNode != leftMostNode and internalNode != rightMostNode:
-                gameBoardLocationV2[internalNode] = [0, internalNode - int(level), internalNode + int(level), internalNode - int(level) + 1,
-                                          internalNode + int(level) + 1]
-
-    if level == int(numLevels):
-
-        # determine the rightMostNode
-        rightMostNode = int((int(numLevels) * (int(numLevels) + 1) / 2))
-        # print("right most node is: " + str(rightMostNode))
-        # determine the leftMostNode
-        leftMostNode = int(rightMostNode) - (int(numLevels) - 1)
-        # print("Left most node is: " + str(leftMostNode))
-
-        # populate valid moves in the rightMostNode and leftMostNode
-        gameBoardLocationV2[rightMostNode] = [0, rightMostNode - int(numLevels), None, None, None]
-        gameBoardLocationV2[leftMostNode] = [0, None, None, leftMostNode - int(numLevels) + 1, None]
-
-        # begin building internal nodes at the leftmostnode
-        internalNode = leftMostNode
-        for internalNode in range(leftMostNode, rightMostNode + 1):
-            if internalNode != leftMostNode and internalNode != rightMostNode:
-                gameBoardLocationV2[internalNode] = [0, internalNode - int(numLevels), None, internalNode - int(numLevels) + 1, None]
-
-
-
-# this code used to validate gameboard generation
-# for z in range(1, int(numNodes) + 1):
-#    print("Location: " + str(z) + " is " + str(gameBoardLocationV2[z]))
-
-
-'''
-left this code so i could validate the results of the generated lists.  the above code if ran with 6 levels generates 
-identical list to the below encoding
-
-# gameBoardLocation encoding
-gameBoardLocation[0] = [0, None, None, None, None]  # unused for this project
-gameBoardLocation[1] = [0, None, 2, None, 3]  # dot count starts at 0, valid moves are lower left, lower right
-gameBoardLocation[2] = [0, None, 4, 1, 5]
-gameBoardLocation[3] = [0, 1, 5, None, 6]
-gameBoardLocation[4] = [0, None, 7, 2, 8]
-gameBoardLocation[5] = [0, 2, 8, 3, 9]
-gameBoardLocation[6] = [0, 3, 9, None, 10]
-gameBoardLocation[7] = [0, None, 11, 4, 12]
-gameBoardLocation[8] = [0, 4, 12, 5, 13]
-gameBoardLocation[9] = [0, 5, 13, 6, 14]
-gameBoardLocation[10] = [0, 6, 14, None, 15]
-gameBoardLocation[11] = [0, None, 16, 7, 17]
-gameBoardLocation[12] = [0, 7, 17, 8, 18]
-gameBoardLocation[13] = [0, 8, 18, 9, 19]
-gameBoardLocation[14] = [0, 9, 19, 10, 20]
-gameBoardLocation[15] = [0, 10, 20, None, 21]
-gameBoardLocation[16] = [0, None, None, 11, None]
-gameBoardLocation[17] = [0, 11, None, 12, None]
-gameBoardLocation[18] = [0, 12, None, 13, None]
-gameBoardLocation[19] = [0, 13, None, 14, None]
-gameBoardLocation[20] = [0, 14, None, 15, None]
-gameBoardLocation[21] = [0, 15, None, None, None]
-# end encoding of gameboard V1
-'''
-
-
-
-
-
-
-runTimes = 0
-# sim will repeat based on user input
-for runTimes in range(1, int(numTimesRan) + 1):
-    # stillPlaying controls if the game is continuing to play.  Once all locations have been visited once, stillPlaying
-    # will change to false and terminate the game
-    stillPlaying = True
-
-    gameDotTrackerV2.clear()  # clear out the current dotTracker to make it ready for next run of the sim
-
-    # i start the 0 location as 1 so that the game can end if no 0s are found in the list.  this requires an adjustment of
-    # -1 to the game statistics
+    numNodes = int((int(numLevels) * (int(numLevels) + 1)) / 2)
+    # create gameDotTrackerV2. uses the number of nodes to create the list.  add 1 because lists are index starting at 0
     gameDotTrackerV2 = [0] * (numNodes + 1)
-    gameDotTrackerV2[0] = 1
-    # i opted to count the start of the game as a visit to location 1.  remove this initialization to not have the start
-    # counted as a visit
-    gameDotTrackerV2[1] = 1
-    diceRoll = 0
-    currentLocation = 1  # game starts location 1.
-    if verbose == True:
-        print("Game Location: " + str(currentLocation), end='')
-        outputFile.write("Game Location: " + str(currentLocation))
+    numVisits = 0
 
-    while stillPlaying:
-
-        # simulate a dice rolling by generating random value 1 to 4. Each value represents a direction to move as follows:
-        # 1 = Upper Left, 2 = Lower Left, 3 = Upper Right, 4 = Lower Right
-        diceRoll = random.randint(1, 4)
-        # added this sleep so I could watch the program execute instead of instantly complete.
-        # adjust this value to slow/down speed up the simulation
-        # commented out as not a requirement of this assignment.  uncomment out to restore delay
-        # time.sleep(0.015)
-
-    # this section checks to see if the location selected by the dice roll is valid.  if so, updates the visit counter and
-    # changes current location to the new location on the gameboard.
-    # if the move is not valid, increments the counter for the currentlocation
-        if gameBoardLocationV2[currentLocation][diceRoll] is not None:
-            currentLocation = gameBoardLocationV2[currentLocation][diceRoll]
-            numVisits = -1
-            colorNode(currentLocation)
-            # for progam efficieny, commenting out the dottracking in the location tuple since this isn't used in the final
-            # calculations.  left for future use.
-            # gameBoardLocation[currentLocation][0] += 1
-            gameDotTrackerV2[currentLocation] += 1
-            numVisits = gameDotTrackerV2[currentLocation]
-            colorNode(currentLocation)
-
-            if verbose == True:
-                print(",", end='')
-                print(str(currentLocation), end='')
-                outputFile.write("," + str(currentLocation))
-            # commented code below allows for more verbose description of what is occurring in game
-            # print("Move valid.  New Location is " + str(currentLocation) + ". Incrementing count. Location " + str(currentLocation) +
-            # " has been visited " + str(gameBoardLocation[currentLocation][0]) + " times")
-        else:
-            # commented code below allows for more verbose description of what is occurring in game
-            # print("Unable to move.  Incrementing count for location " + str(currentLocation))
-            numVisits = -1
-            colorNode(currentLocation)
-            currentLocation = currentLocation
-            gameDotTrackerV2[currentLocation] += 1
-            numVisits = gameDotTrackerV2[currentLocation]
-            colorNode(currentLocation)
-
-            # for progam efficieny, commenting out the dottracking in the location tuple since this isn't used in the final
-            # calculations.  left for future use.
-            # gameBoardLocation[currentLocation][0] += 1
-            if verbose == True:
-                print(",", end='')
-                print(str(currentLocation), end='')
-                outputFile.write("," + str(currentLocation))
-
-    # this code checks to see if 0 does not exist in the gameDotTracker array.  If not, stillPlaying changes to False and the game ends
-        if 0 not in gameDotTrackerV2:
-            stillPlaying = False
-            if verbose == True:
-                print(".")
-                outputFile.write(".\n")
+    # list declarations for recording statistics
+    allMoves = [0] * int(numTimesRan)
+    maxMoves = [0] * int(numTimesRan)
 
 
-    # Reporting statistics
+    # create gameBoard for Version 2 of pyramid. uses the number of nodes to create the list.  add 1 because lists are
+    # index starting at 0
+    gameBoardLocationV2 = [0, 0, 0, 0, 0] * (numNodes + 1)
 
-    print("\nGame Statistics for game: " + str(runTimes))
-    outputFile.write("\nGame Statistics for game: " + str(runTimes) + "\n\n")
+    # game boards for both version 1 and version follow the same encoding rules
+    #
+    # gameBoardLocation contains the game data for each position on the board.
+    # Encoding is as follows:
+    # index 0 - dot counter
+    # ended up not using the index 0 and opted for a separate list for the tracking of dots.  left in code for future use
+    # index 1 - Valid Upper Left Movement
+    # index 2 - Valid Lower Left Movement
+    # index 3 - Valid Upper Right Movement
+    # index 4 - Valid Lower Right Movement
+    # index of gameBoardLocation corresponds to a location on the pyramid.
+    # Example: gameBoardLocation[1] refers to position 1
 
-    # need to adjust off 1 move from totalMoves in each calculation due to the unused element 0 in gameDotTracker being
-    # initalized to 1.
+    # generate gameBoardLocationV2 size
 
-    # stores the total moves for each run of the sim
-    totalMoves: int = sum(gameDotTrackerV2)
-    # need to adjust off 1 move from each recorded moves due to the setting of the 0 index to 1
-    allMoves[runTimes - 1] = (totalMoves - 1)
+    # populate nodes
 
-    print("Total moves to complete the game: " + str(totalMoves - 1))
-    outputFile.write("Total moves to complete the game: " + str(totalMoves - 1) + "\n")
-    print("Average visits per location: " + str((totalMoves - 1)/21))
-    outputFile.write("Average visits per location: " + str((totalMoves - 1)/21) + "\n")
+    # gameBoardLocationV2[0] not used for this project.  initializing as in version 1
+    gameBoardLocationV2[0] = [0, None, None, None, None]
+    # level 1 and  level 2 are required. setting these as special cases.  they will not generate automatically
+    # same values as in version 1
 
-    # find the maximum of dots on any one location
-    maxDots = max(gameDotTrackerV2)
-    maxMoves[runTimes - 1] = maxDots
+    for level in range(1, (int(numLevels) + 1)):
+        # levels 1 and 2 are special cases and declared implicitly
+        if level == 1:
+            gameBoardLocationV2[1] = [0, None, 2, None, 3]  # dot count starts at 0, valid moves are lower left, lower right
 
-    print("Maximum visits to any one location: " + str(maxDots) + "\n\n")
-    outputFile.write("Maximum visits to any one location: " + str(maxDots) + "\n\n\n")
+        if level == 2:
+            gameBoardLocationV2[2] = [0, None, 4, 1, 5]
+            gameBoardLocationV2[3] = [0, 1, 5, None, 6]
 
+
+        # generates the nodes for all the rows in the game board that are not row 1, 2 or the terminating row
+        if level >= 3 and level < int(numLevels):
+
+            # determine the rightMostNode
+            rightMostNode = int((int(level) * (int(level) + 1) / 2))
+            # determine the leftMostNode
+            leftMostNode = int(rightMostNode) - (int(level) - 1)
+
+            # populate right most node's valid locations into the list
+            gameBoardLocationV2[rightMostNode] = [0, rightMostNode - int(level), rightMostNode + int(level), None,
+                                                  rightMostNode + int(level) + 1]
+
+            # populate left most node's valid location into the list
+            gameBoardLocationV2[leftMostNode] = [0, None, leftMostNode + int(level), leftMostNode - int(level) + 1,
+                                                 leftMostNode + int(level) + 1]
+
+
+            # purpose of the following for loop is to generate the internal nodes and the valid moves for each of the
+            # internal nodes.  start at the left most node and continue to the right most node
+            # skips the calculation for left and right most nodes as they are defined as special cases
+            # results validated against the version 1 of the hard encoded list from HW 1
+            y = leftMostNode
+            for internalNode in range(leftMostNode, rightMostNode + 1):
+                if internalNode != leftMostNode and internalNode != rightMostNode:
+                    gameBoardLocationV2[internalNode] = [0, internalNode - int(level), internalNode + int(level), internalNode - int(level) + 1,
+                                              internalNode + int(level) + 1]
+
+        if level == int(numLevels):
+
+            # determine the rightMostNode
+            rightMostNode = int((int(numLevels) * (int(numLevels) + 1) / 2))
+            # print("right most node is: " + str(rightMostNode))
+            # determine the leftMostNode
+            leftMostNode = int(rightMostNode) - (int(numLevels) - 1)
+            # print("Left most node is: " + str(leftMostNode))
+
+            # populate valid moves in the rightMostNode and leftMostNode
+            gameBoardLocationV2[rightMostNode] = [0, rightMostNode - int(numLevels), None, None, None]
+            gameBoardLocationV2[leftMostNode] = [0, None, None, leftMostNode - int(numLevels) + 1, None]
+
+            # begin building internal nodes at the leftmostnode
+            internalNode = leftMostNode
+            for internalNode in range(leftMostNode, rightMostNode + 1):
+                if internalNode != leftMostNode and internalNode != rightMostNode:
+                    gameBoardLocationV2[internalNode] = [0, internalNode - int(numLevels), None, internalNode - int(numLevels) + 1, None]
+
+
+
+    # this code used to validate gameboard generation
+    # for z in range(1, int(numNodes) + 1):
+    #    print("Location: " + str(z) + " is " + str(gameBoardLocationV2[z]))
+
+
+    '''
+    left this code so i could validate the results of the generated lists.  the above code if ran with 6 levels generates 
+    identical list to the below encoding
+    
+    # gameBoardLocation encoding
+    gameBoardLocation[0] = [0, None, None, None, None]  # unused for this project
+    gameBoardLocation[1] = [0, None, 2, None, 3]  # dot count starts at 0, valid moves are lower left, lower right
+    gameBoardLocation[2] = [0, None, 4, 1, 5]
+    gameBoardLocation[3] = [0, 1, 5, None, 6]
+    gameBoardLocation[4] = [0, None, 7, 2, 8]
+    gameBoardLocation[5] = [0, 2, 8, 3, 9]
+    gameBoardLocation[6] = [0, 3, 9, None, 10]
+    gameBoardLocation[7] = [0, None, 11, 4, 12]
+    gameBoardLocation[8] = [0, 4, 12, 5, 13]
+    gameBoardLocation[9] = [0, 5, 13, 6, 14]
+    gameBoardLocation[10] = [0, 6, 14, None, 15]
+    gameBoardLocation[11] = [0, None, 16, 7, 17]
+    gameBoardLocation[12] = [0, 7, 17, 8, 18]
+    gameBoardLocation[13] = [0, 8, 18, 9, 19]
+    gameBoardLocation[14] = [0, 9, 19, 10, 20]
+    gameBoardLocation[15] = [0, 10, 20, None, 21]
+    gameBoardLocation[16] = [0, None, None, 11, None]
+    gameBoardLocation[17] = [0, 11, None, 12, None]
+    gameBoardLocation[18] = [0, 12, None, 13, None]
+    gameBoardLocation[19] = [0, 13, None, 14, None]
+    gameBoardLocation[20] = [0, 14, None, 15, None]
+    gameBoardLocation[21] = [0, 15, None, None, None]
+    # end encoding of gameboard V1
+    '''
+
+
+    # sim will repeat based on user input
+    for runTimes in range(1, int(numTimesRan) + 1):
+        # stillPlaying controls if the game is continuing to play.  Once all locations have been visited once, stillPlaying
+        # will change to false and terminate the game
+        stillPlaying = True
+
+        gameDotTrackerV2.clear()  # clear out the current dotTracker to make it ready for next run of the sim
+
+        # i start the 0 location as 1 so that the game can end if no 0s are found in the list.  this requires an adjustment of
+        # -1 to the game statistics
+        gameDotTrackerV2 = [0] * (numNodes + 1)
+        gameDotTrackerV2[0] = 1
+        # i opted to count the start of the game as a visit to location 1.  remove this initialization to not have the start
+        # counted as a visit
+        gameDotTrackerV2[1] = 1
+        diceRoll = 0
+        currentLocation = 1  # game starts location 1.
+        if verbose == True:
+            print("Game Location: " + str(currentLocation), end='')
+            outputFile.write("Game Location: " + str(currentLocation))
+
+        while stillPlaying:
+
+            # simulate a dice rolling by generating random value 1 to 4. Each value represents a direction to move as follows:
+            # 1 = Upper Left, 2 = Lower Left, 3 = Upper Right, 4 = Lower Right
+            diceRoll = random.randint(1, 4)
+            # added this sleep so I could watch the program execute instead of instantly complete.
+            # adjust this value to slow/down speed up the simulation
+            # commented out as not a requirement of this assignment.  uncomment out to restore delay
+            # time.sleep(0.015)
+
+        # this section checks to see if the location selected by the dice roll is valid.  if so, updates the visit counter and
+        # changes current location to the new location on the gameboard.
+        # if the move is not valid, increments the counter for the currentlocation
+            if gameBoardLocationV2[currentLocation][diceRoll] is not None:
+                currentLocation = gameBoardLocationV2[currentLocation][diceRoll]
+                if firstGame == True:
+                    numVisits = -1
+                    # colorNode(currentLocation)
+                # for progam efficieny, commenting out the dottracking in the location tuple since this isn't used in the final
+                # calculations.  left for future use.
+                # gameBoardLocation[currentLocation][0] += 1
+                gameDotTrackerV2[currentLocation] += 1
+                if firstGame == True:
+                    numVisits = gameDotTrackerV2[currentLocation]
+                    # colorNode(currentLocation)
+
+                if verbose == True:
+                    print(",", end='')
+                    print(str(currentLocation), end='')
+                    outputFile.write("," + str(currentLocation))
+                # commented code below allows for more verbose description of what is occurring in game
+                # print("Move valid.  New Location is " + str(currentLocation) + ". Incrementing count. Location " + str(currentLocation) +
+                # " has been visited " + str(gameBoardLocation[currentLocation][0]) + " times")
+            else:
+                # commented code below allows for more verbose description of what is occurring in game
+                # print("Unable to move.  Incrementing count for location " + str(currentLocation))
+                if firstGame == True:
+                    numVisits = -1
+                    # colorNode(currentLocation)
+                currentLocation = currentLocation
+                gameDotTrackerV2[currentLocation] += 1
+                if firstGame == True:
+                    numVisits = gameDotTrackerV2[currentLocation]
+                    # colorNode(currentLocation)
+
+                # for progam efficieny, commenting out the dottracking in the location tuple since this isn't used in the final
+                # calculations.  left for future use.
+                # gameBoardLocation[currentLocation][0] += 1
+                if verbose == True:
+                    print(",", end='')
+                    print(str(currentLocation), end='')
+                    outputFile.write("," + str(currentLocation))
+
+        # this code checks to see if 0 does not exist in the gameDotTracker array.  If not, stillPlaying changes to False and the game ends
+            if 0 not in gameDotTrackerV2:
+                stillPlaying = False
+                if verbose == True:
+                    print(".")
+                    outputFile.write(".\n")
+
+
+
+        # turtle set up for reporting statistics
+        if firstGame == True:
+            textTurtle = turtle.Turtle()
+            textTurtle.penup()
+            textTurtle.hideturtle()
+
+        '''
+        print("\nGame Statistics for game: " + str(runTimes))
+        outputFile.write("\nGame Statistics for game: " + str(runTimes) + "\n\n")
+        '''
+
+        # need to adjust off 1 move from totalMoves in each calculation due to the unused element 0 in gameDotTracker being
+        # initalized to 1.
+
+        # stores the total moves for each run of the sim
+        totalMoves: int = sum(gameDotTrackerV2)
+
+        # need to adjust off 1 move from each recorded moves due to the setting of the 0 index to 1
+        allMoves[runTimes - 1] = (totalMoves - 1)
+
+        # find the maximum of dots on any one location
+        maxDots = max(gameDotTrackerV2)
+        maxMoves[runTimes - 1] = maxDots
+
+        if firstGame == True:
+            textTurtle.goto(-300, -50)
+            textTurtle.write("Total moves to complete the game: " + str(totalMoves - 1))
+            textTurtle.goto(-300, -70)
+            textTurtle.write("Average visits per location: " + str((totalMoves - 1)/21))
+            textTurtle.goto(-300, -90)
+            textTurtle.write("Maximum visits to any one location: " + str(maxDots))
+        '''
+        print("Total moves to complete the game: " + str(totalMoves - 1))
+        outputFile.write("Total moves to complete the game: " + str(totalMoves - 1) + "\n")
+        print("Average visits per location: " + str((totalMoves - 1)/21))
+        outputFile.write("Average visits per location: " + str((totalMoves - 1)/21) + "\n")
+
+        print("Maximum visits to any one location: " + str(maxDots) + "\n\n")
+        outputFile.write("Maximum visits to any one location: " + str(maxDots) + "\n\n\n")
+        '''
+
+
+    if firstGame == False:
+        simMaxMoves[simRepeat - 2] = sum(allMoves)
+        simMaxDots[simRepeat - 2] = max(maxMoves)
+        # print(simMaxMoves)
+        # print(simMaxDots)
+
+    firstGame = False
+
+'''
 # Grand Total Statistics
 print("Total Simulation Statistics\n")
 outputFile.write("Total Simulation Statistics\n")
@@ -760,8 +816,14 @@ outputFile.write("Maximum max moves is: " + str(max(maxMoves)) + "\n")
 averageMaxMoves = (sum(maxMoves) / int(numTimesRan))
 print("Average number of max moves: " + str(averageMaxMoves))
 outputFile.write("Average number of max moves: " + str(averageMaxMoves) + "\n")
+'''
 
-
+print("Data for Sims from Input File\n")
+print("|Run 1      |Run 2       |Run 3       |Run 4       |")
+print("Levels: " + str(simLevels[0]))
+print("Times Ran: " + str(simTimesRun[0]))
+print("Total Moves: " + str(simMaxMoves[0]))
+print("Max Dots: " + str(simMaxDots[0]))
 # close the file being written
 outputFile.close()
 
