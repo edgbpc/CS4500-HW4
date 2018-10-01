@@ -693,14 +693,14 @@ for simRepeat in range(1, 6):
                 currentLocation = gameBoardLocationV2[currentLocation][diceRoll]
                 if firstGame == True:
                     numVisits = -1
-                    # colorNode(currentLocation)
+                    colorNode(currentLocation)
                 # for progam efficieny, commenting out the dottracking in the location tuple since this isn't used in the final
                 # calculations.  left for future use.
                 # gameBoardLocation[currentLocation][0] += 1
                 gameDotTrackerV2[currentLocation] += 1
                 if firstGame == True:
                     numVisits = gameDotTrackerV2[currentLocation]
-                    # colorNode(currentLocation)
+                    colorNode(currentLocation)
 
                 if verbose == True:
                     print(",", end='')
@@ -714,12 +714,12 @@ for simRepeat in range(1, 6):
                 # print("Unable to move.  Incrementing count for location " + str(currentLocation))
                 if firstGame == True:
                     numVisits = -1
-                    # colorNode(currentLocation)
+                    colorNode(currentLocation)
                 currentLocation = currentLocation
                 gameDotTrackerV2[currentLocation] += 1
                 if firstGame == True:
                     numVisits = gameDotTrackerV2[currentLocation]
-                    # colorNode(currentLocation)
+                    colorNode(currentLocation)
 
                 # for progam efficieny, commenting out the dottracking in the location tuple since this isn't used in the final
                 # calculations.  left for future use.
@@ -819,11 +819,11 @@ outputFile.write("Average number of max moves: " + str(averageMaxMoves) + "\n")
 '''
 
 print("Data for Sims from Input File\n")
-print("|Run 1      |Run 2       |Run 3       |Run 4       |")
-print("Levels: " + str(simLevels[0]))
-print("Times Ran: " + str(simTimesRun[0]))
-print("Total Moves: " + str(simMaxMoves[0]))
-print("Max Dots: " + str(simMaxDots[0]))
+print("|\t\t\t|Run 1\t\t|Run 2\t\t|Run 3\t\t|Run 4\t\t|")
+print("|Levels\t\t|" + "\t" + str(simLevels[0]) + "\t\t|\t" + str(simLevels[1]) + "\t\t|\t" + str(simLevels[2]) + "\t\t|\t" + str(simLevels[3]) + "\t\t|")
+print("|Runs\t\t|" + "\t" + str(simTimesRun[0]) + "\t\t|\t" + str(simTimesRun[1]) + "\t\t|\t" + str(simTimesRun[2]) + "\t\t|\t" + str(simTimesRun[3]) + "\t\t|")
+print("|Moves:\t\t|" + "\t" + str(simMaxMoves[0]) + "\t|\t" + str(simMaxMoves[1]) + "\t|\t" + str(simMaxMoves[2]) + "\t\t|\t" + str(simMaxMoves[3]) + "\t|")
+print("|Max Dots:\t| " + "\t" + str(simMaxDots[0]) + "\t\t|\t" + str(simMaxDots[1]) + "\t\t|\t" + str(simMaxDots[2]) + "\t\t|\t" + str(simMaxDots[3]) + "\t\t|")
 # close the file being written
 outputFile.close()
 
