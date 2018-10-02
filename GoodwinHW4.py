@@ -4,7 +4,7 @@ Eric Goodwin
 Python 3.7.0
 PyCharm IDE
 CS 4500 Introduction to the Software Profession
-External Files created - H3goodwinOutfile.txt
+
 External File used - HWinfile.txt.  Must be supplied to run sim
 Program creates this file with output data.  data is same as what
 is displayed on the screen running of the program.
@@ -82,30 +82,31 @@ import random
 import turtle
 
 # program creates this file if not already created
-outputFile = open("HW4goodwinOutfile.txt", "w")
+# outputFile = open("HW4goodwinOutfile.txt", "w")
 
 
 introMessage = """Dice Rolling Simulation - 
-User to make three selections at the start of the simulation.
-Select yes or no to turn on or off verbose mode.  Verbose mode will display on screen a list of all nodes visted.
-Select number of levels of the pyramid between 2 and 25.
-Select number of times to run the simulation between 10 and 50.
-Program simulates navigating of a pyramid of integers using a four sided die.
-Number of the die indicates direction to travel on the pyramid.  If there is a valid location to travel to
-then the location is updated and that location is marked as visited.  Every visit is recorded.
-If a move is not valid, counts as another visit at the current location.
-Game continues until all locations are visited.
-When game terminates, vital statistics are reported."""
+Program runs 5 simulations.
+The game consists of a pyramid of nodes.
+A 4 sided die is rolled that indicates the direction to try to move.  
+First simulation is always 6 levels and runs one time.  A graphical representation will be displayed.
+Yellow indicates the current, active node.
+As visits increase, nodes continually turn a darker shade of red.
+Game continues until all nodes a visited and then displays game statistics.
+The remaining simulations vary in level and times ran controlled by an input file.
+Once all sims are complete, a table will display for statistics for those 4 games.
+
+"""
 
 print(introMessage + "\n")
-outputFile.write(introMessage + "\n\n")
+# outputFile.write(introMessage + "\n\n")
 
 # next section continually prompts until user selects yes or no for verbose mode.  verbose mode will show all
 # visited location.  input is made not cast sensitive by using .lower method
 # once valid entry is received, break from the while loop and proceed
 # verbose mode off prevents display visited nodes from both screen and output file.  clarified in class
-# option to turn off and on verbose disabled for this version of the assignment.  verbose always on
-verboseModeAnswerNotValid = True
+# option to turn off and on verbose disabled for this version of the assignment.  verbose always off
+# verboseModeAnswerNotValid = True
 verbose = False
 '''
 while verboseModeAnswerNotValid:
@@ -185,6 +186,8 @@ for index in range(len(parametersFromFile)):
     gameData.append(int(tempData[0]))
     gameData.append(int(tempData[1]))
 
+# close Read in file
+readInFile.close()
 # print(gameData)
 
 # firstGame is used a flag. controls of the colorNode function is called.  Only calls on first run of the sim
@@ -373,6 +376,7 @@ def colorNode(currentLocation):
 
 # draw the background of the gameboard
 background = turtle.Turtle()
+background.hideturtle()
 background.speed(0)
 background.fillcolor('black')
 background.begin_fill()
@@ -389,6 +393,7 @@ background.end_fill()
 
 # draw each row of the game board, starts in row 6 and moves progress to row 1
 rowSixTriangles = turtle.Turtle()
+rowSixTriangles.hideturtle()
 rowSixTriangles.speed(0)
 rowSixTriangles.fillcolor(colorSelector(0))
 rowSixTriangles.begin_fill()
@@ -409,6 +414,7 @@ rowSixTriangles.end_fill()
 rowSixTriangles.penup()
 
 rowFiveTriangles = turtle.Turtle()
+rowFiveTriangles.hideturtle()
 rowFiveTriangles.speed(0)
 rowFiveTriangles.fillcolor(colorSelector(0))
 rowFiveTriangles.penup()
@@ -432,6 +438,7 @@ rowFiveTriangles.end_fill()
 rowFiveTriangles.penup()
 
 rowFourTriangles = turtle.Turtle()
+rowFourTriangles.hideturtle()
 rowFourTriangles.speed(0)
 rowFourTriangles.fillcolor(colorSelector(0))
 rowFourTriangles.penup()
@@ -455,6 +462,7 @@ rowFourTriangles.end_fill()
 rowFourTriangles.penup()
 
 rowThreeTriangles = turtle.Turtle()
+rowThreeTriangles.hideturtle()
 rowThreeTriangles.speed(0)
 rowThreeTriangles.fillcolor(colorSelector(0))
 rowThreeTriangles.penup()
@@ -478,6 +486,7 @@ rowThreeTriangles.end_fill()
 rowThreeTriangles.penup()
 
 rowTwoTriangles = turtle.Turtle()
+rowTwoTriangles.hideturtle()
 rowTwoTriangles.speed(0)
 rowTwoTriangles.fillcolor(colorSelector(0))
 rowTwoTriangles.penup()
@@ -501,6 +510,7 @@ rowTwoTriangles.end_fill()
 rowTwoTriangles.penup()
 
 rowOneTriangles = turtle.Turtle()
+rowOneTriangles.hideturtle()
 rowOneTriangles.speed(0)
 rowOneTriangles.fillcolor(colorSelector(0))
 rowOneTriangles.penup()
@@ -698,7 +708,7 @@ for simRepeat in range(1, 6):
         currentLocation = 1  # game starts location 1.
         if verbose == True:
             print("Game Location: " + str(currentLocation), end='')
-            outputFile.write("Game Location: " + str(currentLocation))
+            # outputFile.write("Game Location: " + str(currentLocation))
 
         while stillPlaying:
 
@@ -729,7 +739,7 @@ for simRepeat in range(1, 6):
                 if verbose == True:
                     print(",", end='')
                     print(str(currentLocation), end='')
-                    outputFile.write("," + str(currentLocation))
+                    # outputFile.write("," + str(currentLocation))
                 # commented code below allows for more verbose description of what is occurring in game
                 # print("Move valid.  New Location is " + str(currentLocation) + ". Incrementing count. Location " + str(currentLocation) +
                 # " has been visited " + str(gameBoardLocation[currentLocation][0]) + " times")
@@ -751,14 +761,14 @@ for simRepeat in range(1, 6):
                 if verbose == True:
                     print(",", end='')
                     print(str(currentLocation), end='')
-                    outputFile.write("," + str(currentLocation))
+                    # outputFile.write("," + str(currentLocation))
 
         # this code checks to see if 0 does not exist in the gameDotTracker array.  If not, stillPlaying changes to False and the game ends
             if 0 not in gameDotTrackerV2:
                 stillPlaying = False
                 if verbose == True:
                     print(".")
-                    outputFile.write(".\n")
+                    # outputFile.write(".\n")
 
 
 
@@ -854,7 +864,7 @@ print("|Runs\t\t|" + "\t" + str(simTimesRun[0]) + "\t\t|\t" + str(simTimesRun[1]
 print("|Moves:\t\t|" + "\t" + str(simMaxMoves[0]) + "\t|\t" + str(simMaxMoves[1]) + "\t|\t" + str(simMaxMoves[2]) + "\t\t|\t" + str(simMaxMoves[3]) + "\t|")
 print("|Max Dots:\t| " + "\t" + str(simMaxDots[0]) + "\t\t|\t" + str(simMaxDots[1]) + "\t\t|\t" + str(simMaxDots[2]) + "\t\t|\t" + str(simMaxDots[3]) + "\t\t|")
 # close the file being written
-outputFile.close()
+# outputFile.close()
 
 turtle.done()
 
