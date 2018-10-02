@@ -373,16 +373,15 @@ def colorNode(currentLocation):
         rowSixTriangles.end_fill()
 
 
-
 # draw the background of the gameboard
 background = turtle.Turtle()
 background.hideturtle()
 background.speed(0)
 background.fillcolor('black')
 background.begin_fill()
-background.penup
+background.penup()
 background.goto(-300, 0)
-background.pendown
+background.pendown()
 background.forward(300)
 background.left(120)
 background.forward(300)
@@ -397,9 +396,9 @@ rowSixTriangles.hideturtle()
 rowSixTriangles.speed(0)
 rowSixTriangles.fillcolor(colorSelector(0))
 rowSixTriangles.begin_fill()
-rowSixTriangles.penup
+rowSixTriangles.penup()
 rowSixTriangles.goto(-300, 0)
-rowSixTriangles.pendown
+rowSixTriangles.pendown()
 for x in range(1, 7):
     rowSixTriangles.forward(50)
     rowSixTriangles.left(120)
@@ -540,14 +539,20 @@ simMaxMoves = [0, 0, 0, 0]
 simMaxDots = [0, 0, 0, 0]
 
 # sim repeats 5 times.  1st pass runs the graphical representation
-# passed 2 through 5 controlled by the input file
+# passed 2 through 5 controlled by the input file\
+# new gameboard is created each simRepeat
 for simRepeat in range(1, 6):
 
+    # loan numLevels and numTimesRan from the gameData list.  After these values saved into the reporting lists
+    # pop off the first two values. On next run of sim, new values loaded into these variables
     numLevels = gameData[0]
     numTimesRan = gameData[1]
 
     # only retains the data from runs 2 through 5
     if firstGame == False:
+        # the subscript adjust by 2 is due to this data is only recorded for sims 2 through 5 but the
+        # list saving the data is 4 data points in each list.  adjust the subscript so game 2 aligns with
+        # the 0 subscript in each reporting list
         simLevels[simRepeat - 2] = gameData[0]
         simTimesRun[simRepeat - 2] = gameData[1]
 
@@ -603,7 +608,6 @@ for simRepeat in range(1, 6):
             gameBoardLocationV2[2] = [0, None, 4, 1, 5]
             gameBoardLocationV2[3] = [0, 1, 5, None, 6]
 
-
         # generates the nodes for all the rows in the game board that are not row 1, 2 or the terminating row
         if level >= 3 and level < int(numLevels):
 
@@ -619,7 +623,6 @@ for simRepeat in range(1, 6):
             # populate left most node's valid location into the list
             gameBoardLocationV2[leftMostNode] = [0, None, leftMostNode + int(level), leftMostNode - int(level) + 1,
                                                  leftMostNode + int(level) + 1]
-
 
             # purpose of the following for loop is to generate the internal nodes and the valid moves for each of the
             # internal nodes.  start at the left most node and continue to the right most node
@@ -644,18 +647,15 @@ for simRepeat in range(1, 6):
             gameBoardLocationV2[rightMostNode] = [0, rightMostNode - int(numLevels), None, None, None]
             gameBoardLocationV2[leftMostNode] = [0, None, None, leftMostNode - int(numLevels) + 1, None]
 
-            # begin building internal nodes at the leftmostnode
+            # begin building internal nodes at the leftMostNode
             internalNode = leftMostNode
             for internalNode in range(leftMostNode, rightMostNode + 1):
                 if internalNode != leftMostNode and internalNode != rightMostNode:
                     gameBoardLocationV2[internalNode] = [0, internalNode - int(numLevels), None, internalNode - int(numLevels) + 1, None]
 
-
-
     # this code used to validate gameboard generation
     # for z in range(1, int(numNodes) + 1):
     #    print("Location: " + str(z) + " is " + str(gameBoardLocationV2[z]))
-
 
     '''
     left this code so i could validate the results of the generated lists.  the above code if ran with 6 levels generates 
@@ -770,14 +770,6 @@ for simRepeat in range(1, 6):
                     print(".")
                     # outputFile.write(".\n")
 
-
-
-        # turtle set up for reporting statistics
-        if firstGame == True:
-            textTurtle = turtle.Turtle()
-            textTurtle.penup()
-            textTurtle.hideturtle()
-
         '''
         print("\nGame Statistics for game: " + str(runTimes))
         outputFile.write("\nGame Statistics for game: " + str(runTimes) + "\n\n")
@@ -799,6 +791,9 @@ for simRepeat in range(1, 6):
         # this turtle draws the report for the graphical representation of the first pass of the sim.
         # only draws first pass
         if firstGame == True:
+            textTurtle = turtle.Turtle()
+            textTurtle.penup()
+            textTurtle.hideturtle()
             textTurtle.goto(-300, -50)
             textTurtle.write("Total moves to complete the game: " + str(totalMoves - 1))
             textTurtle.goto(-300, -70)
@@ -815,9 +810,11 @@ for simRepeat in range(1, 6):
         outputFile.write("Maximum visits to any one location: " + str(maxDots) + "\n\n\n")
         '''
 
-
     # retains only the data from passes 2 through 5
     if firstGame == False:
+        # the subscript adjust by 2 is due to this data is only recorded for sims 2 through 5 but the
+        # list saving the data is 4 data points in each list.  adjust the subscript so game 2 aligns with
+        # the 0 subscript in each reporting list
         simMaxMoves[simRepeat - 2] = sum(allMoves)
         simMaxDots[simRepeat - 2] = max(maxMoves)
         # print(simMaxMoves)
@@ -869,7 +866,7 @@ print("|Max Dots:\t| " + "\t" + str(simMaxDots[0]) + "\t\t|\t" + str(simMaxDots[
 turtle.done()
 
 # testing
-# colorNode subtainally slows down sim running.  comment out in order to speed up testing.  final runs turned back on
+# colorNode  slows down sim running.  comment out in order to speed up testing.  final runs turned back on
 # used defined dice rolls to determine if currentlocation changed to expected location
 # displayed gameDotTracker to be able to confirm dot summing and max dots to verify index
 # git used for version control.
@@ -879,3 +876,5 @@ turtle.done()
 # tested verbose on and off.  results as expected
 # hard time testing final numbers for passes 2 through 5.  seems to make sense based on previous versions
 
+# feature consideration - change the way the active node works by drawing a new triangle over the previous and then
+# resetting it once its no longer active instead of redrawing each node
